@@ -12,6 +12,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
       // Clear loading message
       activitiesList.innerHTML = "";
+      // Reset activity select options
+      activitySelect.innerHTML = '<option value="">-- Select an activity --</option>';
 
       // Populate activities list
       Object.entries(activities).forEach(([name, details]) => {
@@ -25,9 +27,60 @@ document.addEventListener("DOMContentLoaded", () => {
           <p>${details.description}</p>
           <p><strong>Schedule:</strong> ${details.schedule}</p>
           <p><strong>Availability:</strong> ${spotsLeft} spots left</p>
+          <p><strong>Participants (${details.participants.length}):</strong></p>
+          ${details.participants.length > 0 ? `
+            <ul class="participant-list">
+              ${details.participants
+                .map(
+                  (participant) =>
+                    `<li data-activity="${encodeURIComponent(name)}" data-email="${encodeURIComponent(participant)}">
+                      <span class="participant-name">${participant}</span>
+                      <button class="remove-participant-btn" aria-label="Remove ${participant}">✖</button>
+                    </li>`
+                )
+                .join("")}
+            </ul>
+          ` : `<p class="empty-participants">No one has signed up yet.</p>`}
         `;
 
         activitiesList.appendChild(activityCard);
+
+        // Setup delete buttons for participants
+        activityCard.querySelectorAll(".remove-participant-btn").forEach((button) => {
+          button.addEventListener("click", async (event) => {
+            event.preventDefault();
+            const listItem = button.closest("li");
+            const activityValue = decodeURIComponent(listItem.dataset.activity);
+            const emailValue = decodeURIComponent(listItem.dataset.email);
+
+            try {
+              const deleteResponse = await fetch(
+                `/activities/${encodeURIComponent(activityValue)}/participants?email=${encodeURIComponent(emailValue)}`,
+                { method: "DELETE" }
+              );
+
+              const deleteResult = await deleteResponse.json();
+
+              if (deleteResponse.ok) {
+                messageDiv.textContent = deleteResult.message;
+                messageDiv.className = "success";
+                fetchActivities();
+              } else {
+                messageDiv.textContent = deleteResult.detail || "Failed to remove participant.";
+                messageDiv.className = "error";
+              }
+            } catch (error) {
+              messageDiv.textContent = "Failed to remove participant.";
+              messageDiv.className = "error";
+              console.error("Error removing participant:", error);
+            }
+
+            messageDiv.classList.remove("hidden");
+            setTimeout(() => {
+              messageDiv.classList.add("hidden");
+            }, 5000);
+          });
+        });
 
         // Add option to select dropdown
         const option = document.createElement("option");
@@ -62,6 +115,7 @@ document.addEventListener("DOMContentLoaded", () => {
         messageDiv.textContent = result.message;
         messageDiv.className = "success";
         signupForm.reset();
+        await fetchActivities();
       } else {
         messageDiv.textContent = result.detail || "An error occurred";
         messageDiv.className = "error";
