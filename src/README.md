@@ -48,3 +48,20 @@ The application uses a simple data model with meaningful identifiers:
    - Grade level
 
 All data is stored in memory, which means data will be reset when the server restarts.
+
+## Running Tests
+
+1. Install test dependencies:
+
+   ```
+   pip install pytest
+   ```
+
+2. Run the test suite from repository root:
+
+   ```
+   pytest -q
+   ```
+
+3. Verify tests pass and re-run whenever API behavior updates.
+
