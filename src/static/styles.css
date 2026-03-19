@@ -65,6 +65,51 @@ section h3 {
   background-color: #f9f9f9;
 }
 
+.participant-list {
+  margin: 8px 0 0 0;
+  padding-left: 0;
+  color: #333;
+}
+
+.participant-list li {
+  display: flex;
+  align-items: center;
+  margin-bottom: 6px;
+  list-style-type: none;
+  padding: 6px 10px;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  background-color: #ffffff;
+}
+
+.participant-name {
+  flex: 1;
+}
+
+.remove-participant-btn {
+  background: transparent;
+  border: none;
+  color: #c62828;
+  font-weight: bold;
+  cursor: pointer;
+  border-radius: 3px;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.remove-participant-btn:hover {
+  background-color: rgba(198, 40, 40, 0.12);
+}
+
+.empty-participants {
+  margin: 0;
+  color: #777;
+  font-style: italic;
+}
+
 .activity-card h4 {
   margin-bottom: 10px;
   color: #0066cc;
